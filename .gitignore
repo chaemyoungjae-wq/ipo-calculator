@@ -18,3 +18,7 @@ ipo_data.py
 실행.bat
 /requirements.txt
 앱실행.bat
+
+# Firebase 에뮬레이터 로그
+*-debug.log
+.firebase/

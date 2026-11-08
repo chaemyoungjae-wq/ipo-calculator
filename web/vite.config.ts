@@ -1,8 +1,9 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  test: { include: ["src/**/*.test.{ts,tsx}"] },
   base: "./", // GitHub Pages의 하위 경로에서도 동작하도록 상대 경로를 쓴다.
   plugins: [
     react(),

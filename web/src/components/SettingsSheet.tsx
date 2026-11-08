@@ -1,8 +1,17 @@
 import { useRef, useState } from "react";
 import { computeRecord, subFeeFor } from "../lib/calc";
 import { parseAmount, shortBroker } from "../lib/format";
-import { parseBackup, useStore, type Backup } from "../lib/store";
+import { parseBackup, useStore, type Backup, type CloudState } from "../lib/store";
 import { Sheet } from "./Sheet";
+
+const CLOUD_LABEL: Record<CloudState, string> = {
+  off: "",
+  merging: "기록을 맞추는 중이에요...",
+  synced: "모든 기록이 계정에 저장됐어요.",
+  pending: "변경 내용을 올리는 중이에요...",
+  offline: "오프라인이에요. 연결되면 자동으로 올라가요.",
+  error: "연동에 문제가 생겼어요. 앱을 다시 열어 주세요.",
+};
 
 function download(name: string, content: string, type: string) {
   const url = URL.createObjectURL(new Blob([content], { type }));
@@ -38,8 +47,12 @@ function NumberField(props: { label: string; value: number; suffix: string; step
 }
 
 export function SettingsSheet({ onClose, onToast }: { onClose: () => void; onToast: (m: string) => void }) {
-  const { settings, updateSettings, records, ipoByNo, restore, data, reload, dataStatus } = useStore();
+  const {
+    settings, updateSettings, records, ipoByNo, restore, data, reload, dataStatus,
+    cloudAvailable, account, cloudState, signIn, signOut,
+  } = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [authBusy, setAuthBusy] = useState(false);
   const [pendingBackup, setPendingBackup] = useState<Backup | null>(null);
 
   const exportBackup = () => {
@@ -71,6 +84,47 @@ export function SettingsSheet({ onClose, onToast }: { onClose: () => void; onToa
 
   return (
     <Sheet title="설정" onClose={onClose}>
+      {cloudAvailable && (
+        <>
+          <h3 className="section-title first">계정 연동</h3>
+          {account ? (
+            <>
+              <p className="account-line">{account.email ?? "Google 계정"}</p>
+              <p className={cloudState === "error" ? "hint danger" : "hint"}>{CLOUD_LABEL[cloudState]}</p>
+              <button
+                className="btn"
+                disabled={authBusy}
+                onClick={async () => {
+                  setAuthBusy(true);
+                  const message = await signOut();
+                  setAuthBusy(false);
+                  if (message) onToast(message);
+                }}
+              >
+                로그아웃
+              </button>
+              <p className="hint">로그아웃하면 이 기기에 보이는 기록은 비워지고, 기록은 계정에 남아요.</p>
+            </>
+          ) : (
+            <>
+              <p className="hint">같은 Google 계정으로 로그인하면 PC와 휴대폰의 기록이 자동으로 맞춰져요.</p>
+              <button
+                className="btn primary wide-inline"
+                disabled={authBusy}
+                onClick={async () => {
+                  setAuthBusy(true);
+                  const message = await signIn();
+                  setAuthBusy(false);
+                  if (message) onToast(message);
+                }}
+              >
+                Google로 로그인
+              </button>
+            </>
+          )}
+        </>
+      )}
+
       <h3 className="section-title">수익 계산</h3>
       <NumberField label="증권거래세" suffix="%" step="0.01" value={settings.taxRate} onChange={(taxRate) => updateSettings({ taxRate })} />
       <NumberField label="매도 수수료" suffix="%" step="0.001" value={settings.sellFeeRate} onChange={(sellFeeRate) => updateSettings({ sellFeeRate })} />
@@ -112,7 +166,11 @@ export function SettingsSheet({ onClose, onToast }: { onClose: () => void; onToa
       ))}
 
       <h3 className="section-title">백업</h3>
-      <p className="hint">기록은 이 기기에만 저장돼요. 기기를 바꾸거나 앱을 지우기 전에 백업 파일을 받아 두세요.</p>
+      <p className="hint">
+        {account
+          ? "기록은 계정에 저장돼요. 필요하면 파일로도 보관할 수 있어요."
+          : "기록은 이 기기에만 저장돼요. 기기를 바꾸거나 앱을 지우기 전에 백업 파일을 받아 두세요."}
+      </p>
       <div className="btn-row">
         <button className="btn" onClick={exportBackup}>백업 받기</button>
         <button className="btn" onClick={() => fileRef.current?.click()}>백업 불러오기</button>

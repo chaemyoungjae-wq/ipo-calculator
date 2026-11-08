@@ -18,7 +18,7 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 export function App() {
-  const { ready, saveFailed, dataStatus, data, reload } = useStore();
+  const { ready, saveFailed, dataStatus, data, reload, cloudState, cloudNotice, clearCloudNotice } = useStore();
   const [tab, setTab] = useState<Tab>("upcoming");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -57,6 +57,17 @@ export function App() {
         </nav>
       </header>
 
+      {cloudNotice && (
+        <p className="notice">
+          {cloudNotice}{" "}
+          <button className="link" onClick={clearCloudNotice}>
+            닫기
+          </button>
+        </p>
+      )}
+      {cloudState === "error" && !cloudNotice && (
+        <p className="notice danger">계정 연동에 문제가 생겼어요. 앱을 다시 열어 주세요.</p>
+      )}
       {saveFailed && <p className="notice danger">기록을 저장하지 못했어요. 설정에서 백업 파일을 내려받아 두세요.</p>}
       {dataStatus === "cached" && (
         <p className="notice">

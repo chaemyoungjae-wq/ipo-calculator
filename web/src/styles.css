@@ -196,6 +196,24 @@ main {
   margin: 4px 0 10px;
 }
 
+.hint.danger {
+  color: var(--danger);
+}
+
+.section-title.first {
+  margin-top: 4px;
+}
+
+.account-line {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.btn.wide-inline {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
 .hint.right {
   text-align: right;
 }

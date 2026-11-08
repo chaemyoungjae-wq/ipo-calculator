@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function isValidRecord(data) {
+      return data.keys().hasOnly(['ipoNo', 'broker', 'qty', 'sellPrice'])
+        && data.keys().hasAll(['ipoNo', 'broker', 'qty'])
+        && data.ipoNo is int
+        && data.broker is string && data.broker.size() <= 40
+        && data.qty is int && data.qty >= 0
+        && (!('sellPrice' in data) || data.sellPrice == null
+            || (data.sellPrice is number && data.sellPrice >= 0));
+    }
+
+    function isValidSettings(data) {
+      return data.keys().hasOnly([
+        'myBrokers', 'feeFreeBrokers', 'taxRate', 'sellFeeRate', 'defaultSubFee',
+        'brokerSubFee', 'defaultMinQty', 'brokerMinQty'
+      ]);
+    }
+
+    // 각 계정은 자기 기록만 읽고 쓸 수 있다.
+    match /users/{uid}/records/{recordId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && isValidRecord(request.resource.data);
+    }
+
+    match /users/{uid}/meta/settings {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && isValidSettings(request.resource.data);
+    }
+
+    // 위에 적지 않은 경로는 모두 거부한다.
+  }
+}
