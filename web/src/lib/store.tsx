@@ -108,6 +108,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   /** 값이 있으면 계정 모드. 이때는 이 기기 저장소에 쓰지 않는다. */
   const cloudUid = useRef<string | null>(null);
   const cloudModule = useRef<CloudModule | null>(null);
+  /** 로그아웃 중에는 연결을 닫으며 생기는 오류를 알리지 않는다. */
+  const signingOut = useRef(false);
 
   const fetchData = useCallback(async () => {
     setDataStatus("loading");
@@ -126,6 +128,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const onCloudError = useCallback((error: unknown) => {
+    if (signingOut.current) return;
     console.error("계정 연동 오류", error);
     setCloudState("error");
   }, []);
@@ -270,7 +273,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       signOut: async () => {
         const cloud = cloudModule.current;
         if (!cloud) return null;
+        signingOut.current = true;
         const done = await cloud.signOutAndClear();
+        signingOut.current = false;
         if (!done) return "아직 올라가지 않은 변경이 있어요. 인터넷에 연결한 뒤 다시 시도해 주세요.";
         location.reload();
         return null;
