@@ -1,0 +1,73 @@
+name: 공모주 데이터 갱신 및 배포
+
+on:
+  schedule:
+    # 시각은 UTC 기준. 한국 시각 평일 09:15, 12:30, 16:10, 20:00
+    - cron: "15 0 * * 1-5"
+    - cron: "30 3 * * 1-5"
+    - cron: "10 7 * * 1-5"
+    - cron: "0 11 * * 1-5"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 수집기 테스트
+        run: |
+          pip install -r collector/requirements.txt
+          cd collector && python -m unittest test_collect
+
+      - name: 공모주 데이터 수집
+        id: collect
+        continue-on-error: true # 실패해도 마지막 정상 데이터로 배포를 이어 간다.
+        run: python collector/collect.py
+
+      - name: 데이터 저장
+        if: steps.collect.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/ipos.json
+          git diff --cached --quiet || git commit -m "공모주 데이터 갱신"
+          git push
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: 앱 테스트와 빌드
+        working-directory: web
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+      - uses: actions/deploy-pages@v4
+
+      - name: 수집 실패 알림
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo "::error::공모주 데이터 수집에 실패해 이전 데이터로 배포했습니다."
+          exit 1
