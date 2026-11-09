@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-09T01:14+09:00",
+ "updatedAt": "2026-11-09T15:33+09:00",
  "warnings": [],
  "ipos": [
   {
@@ -513,7 +513,8 @@
    "instCompetition": "871.74:1",
    "lockupPct": 1.13,
    "floatShares": 7830204,
-   "floatPct": 64.99
+   "floatPct": 64.99,
+   "listDate": "2026-11-18"
   },
   {
    "no": 2338,
