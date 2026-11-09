@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-09T15:33+09:00",
+ "updatedAt": "2026-11-09T20:55+09:00",
  "warnings": [],
  "ipos": [
   {
@@ -484,7 +484,11 @@
      "name": "IBK투자증권",
      "limit": 65000
     }
-   ]
+   ],
+   "listDate": "2026-11-20",
+   "price": 5700,
+   "instCompetition": "1051.38:1",
+   "lockupPct": 4.16
   },
   {
    "no": 2331,
@@ -514,7 +518,9 @@
    "lockupPct": 1.13,
    "floatShares": 7830204,
    "floatPct": 64.99,
-   "listDate": "2026-11-18"
+   "listDate": "2026-11-18",
+   "subCompetition": "834.73:1",
+   "proportional": "1669:1"
   },
   {
    "no": 2338,
