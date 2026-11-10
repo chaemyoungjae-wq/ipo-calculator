@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-10T06:11+09:00",
+ "updatedAt": "2026-11-10T10:44+09:00",
  "warnings": [],
  "ipos": [
   {
@@ -680,7 +680,15 @@
    "subCompetition": "1219.37:1",
    "proportional": "2439:1",
    "floatShares": 2734201,
-   "floatPct": 29.47
+   "floatPct": 29.47,
+   "open38": 51100,
+   "open": 51100,
+   "high": 57300,
+   "low": 34600,
+   "close": 35150,
+   "priceCheck": false,
+   "priceSource": "naver",
+   "priceFinal": false
   },
   {
    "no": 2329,
