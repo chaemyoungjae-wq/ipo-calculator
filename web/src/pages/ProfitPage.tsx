@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { ProfitChart } from "../components/ProfitChart";
 import { monthsAgo, shortBroker, shortDate, signedPct, signedWon, todayIso, toneOf, won } from "../lib/format";
-import { periodRange, summarize, yearOptions, type PeriodKind } from "../lib/stats";
-import { ChevronLeftIcon, ChevronRightIcon } from "../components/icons";
+import { periodRange, stepMonth, summarize, yearOptions, type PeriodKind } from "../lib/stats";
+import { StepSelect } from "../components/StepSelect";
+
+const MONTH_CHOICES = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: `${i + 1}월` }));
 import { useStore } from "../lib/store";
 
 const KINDS: { id: PeriodKind; label: string }[] = [
@@ -31,6 +33,15 @@ export function ProfitPage({ onOpen }: { onOpen: (id: string) => void }) {
   const [from, setFrom] = useState(() => monthsAgo(today, 3));
   const [to, setTo] = useState(today);
 
+  const yearChoices = years.map((y) => ({ value: y, label: `${y}년` }));
+  const minYear = years[years.length - 1];
+  const maxYear = years[0];
+  const moveMonth = (delta: number) => {
+    const next = stepMonth(year, month, delta);
+    setYear(next.year);
+    setMonth(next.month);
+  };
+
   const [rangeFrom, rangeTo] = kind === "custom" ? [from, to] : periodRange(kind, year, month);
   const invalidRange = kind === "custom" && (!from || !to || from > to);
 
@@ -57,33 +68,40 @@ export function ProfitPage({ onOpen }: { onOpen: (id: string) => void }) {
             <input type="date" aria-label="종료일" value={to} onChange={(e) => setTo(e.target.value)} />
           </>
         ) : (
-          <>
-            <div className="year-stepper">
-              <button
-                className="step-btn"
-                aria-label="이전 연도"
-                disabled={year <= years[years.length - 1]}
-                onClick={() => setYear(year - 1)}
-              >
-                <ChevronLeftIcon />
-              </button>
-              <select aria-label="연도" value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                {years.map((y) => (
-                  <option key={y} value={y}>{y}년</option>
+          kind === "year" ? (
+            <StepSelect
+              label="연도"
+              value={year}
+              options={yearChoices}
+              onChange={setYear}
+              onPrev={() => setYear(year - 1)}
+              onNext={() => setYear(year + 1)}
+              prevDisabled={year <= minYear}
+              nextDisabled={year >= maxYear}
+              prevLabel="이전 연도"
+              nextLabel="다음 연도"
+            />
+          ) : (
+            <>
+              <select className="year-select" aria-label="연도" value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                {yearChoices.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
               </select>
-              <button className="step-btn" aria-label="다음 연도" disabled={year >= years[0]} onClick={() => setYear(year + 1)}>
-                <ChevronRightIcon />
-              </button>
-            </div>
-            {kind === "month" && (
-              <select className="month-select" aria-label="월" value={month} onChange={(e) => setMonth(Number(e.target.value))}>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                  <option key={m} value={m}>{m}월</option>
-                ))}
-              </select>
-            )}
-          </>
+              <StepSelect
+                label="월"
+                value={month}
+                options={MONTH_CHOICES}
+                onChange={setMonth}
+                onPrev={() => moveMonth(-1)}
+                onNext={() => moveMonth(1)}
+                prevDisabled={year <= minYear && month === 1}
+                nextDisabled={year >= maxYear && month === 12}
+                prevLabel="이전 달"
+                nextLabel="다음 달"
+              />
+            </>
+          )
         )}
       </div>
       {invalidRange && <p className="notice inline">시작일이 종료일보다 늦어요.</p>}

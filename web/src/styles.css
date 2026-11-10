@@ -854,33 +854,52 @@ main {
   background: var(--bg);
 }
 
-.year-stepper {
+/* 연도·월 선택: 펼침 표시(▾)를 없애고 가운데 정렬 */
+.period-row select {
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: center;
+  text-align-last: center;
+}
+
+.period-row .year-select {
+  flex: 0 0 110px;
+}
+
+/* 테두리 하나 안에 좌우 넘김 영역과 선택 칸 */
+.step-select {
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 4px;
   min-width: 0;
-}
-
-.year-stepper select {
-  min-width: 88px;
-  text-align: center;
-}
-
-/* 월별에서 연도 묶음이 좁아지지 않도록 월 칸은 고정 폭으로 둔다. */
-.period-row .month-select {
-  flex: 0 0 96px;
-}
-
-.step-btn {
-  display: grid;
-  place-items: center;
-  width: 42px;
   height: 42px;
-  flex: none;
   border: 1px solid var(--line);
   border-radius: 10px;
-  color: var(--ink);
+  background: var(--bg);
+}
+
+.step-select:focus-within {
+  border-color: var(--ink-3);
+}
+
+.period-row .step-select select {
+  height: 100%;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+}
+
+.step-arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 100%;
+  flex: none;
+  color: var(--ink-3);
+}
+
+.step-arrow:disabled {
+  opacity: 0.3;
 }
 
 .hero {

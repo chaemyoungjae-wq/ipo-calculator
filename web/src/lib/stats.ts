@@ -43,6 +43,12 @@ export function yearOptions(recordYears: number[], thisYear: number): number[] {
   return result;
 }
 
+/** delta달 이동. 1월에서 뒤로 가면 전년 12월, 12월에서 앞으로 가면 다음 해 1월. */
+export function stepMonth(year: number, month: number, delta: number): { year: number; month: number } {
+  const index = year * 12 + (month - 1) + delta;
+  return { year: Math.floor(index / 12), month: (index % 12) + 1 };
+}
+
 export function monthsBetween(from: string, to: string): string[] {
   const result: string[] = [];
   let y = Number(from.slice(0, 4));

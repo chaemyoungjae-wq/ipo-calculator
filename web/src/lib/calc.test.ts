@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS, type Ipo, type SubRecord } from "../types";
 import { computeRecord, minDeposit } from "./calc";
 import { brokerKey, ipoStage, matchesName, monthsAgo, shortBroker } from "./format";
-import { monthsBetween, periodRange, summarize, yearOptions } from "./stats";
+import { monthsBetween, periodRange, stepMonth, summarize, yearOptions } from "./stats";
 
 const ipo: Ipo = { no: 1, name: "테스트", price: 12400, open: 15890, listDate: "2026-11-04", depositRate: 50 };
 const record = (over: Partial<SubRecord> = {}): SubRecord => ({
@@ -73,6 +73,12 @@ describe("stats", () => {
   it("연도 목록은 가장 이른 기록 해부터 내년까지 빠짐없이 만든다", () => {
     expect(yearOptions([2023, 2026], 2026)).toEqual([2027, 2026, 2025, 2024, 2023]);
     expect(yearOptions([], 2026)).toEqual([2027, 2026]);
+  });
+
+  it("월을 넘기면 연도도 함께 바뀐다", () => {
+    expect(stepMonth(2026, 11, 1)).toEqual({ year: 2026, month: 12 });
+    expect(stepMonth(2026, 12, 1)).toEqual({ year: 2027, month: 1 });
+    expect(stepMonth(2026, 1, -1)).toEqual({ year: 2025, month: 12 });
   });
 
   it("3개월 전 날짜를 구한다", () => {
