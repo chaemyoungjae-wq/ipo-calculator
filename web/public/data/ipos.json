@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-10T10:44+09:00",
+ "updatedAt": "2026-11-10T13:35+09:00",
  "warnings": [],
  "ipos": [
   {
@@ -460,7 +460,9 @@
      "name": "NH투자증권",
      "limit": 10700
     }
-   ]
+   ],
+   "floatShares": 5482794,
+   "floatPct": 28.98
   },
   {
    "no": 2334,
@@ -684,8 +686,8 @@
    "open38": 51100,
    "open": 51100,
    "high": 57300,
-   "low": 34600,
-   "close": 35150,
+   "low": 29200,
+   "close": 30400,
    "priceCheck": false,
    "priceSource": "naver",
    "priceFinal": false
