@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-10T13:35+09:00",
+ "updatedAt": "2026-11-10T13:47+09:00",
  "warnings": [],
  "ipos": [
   {
@@ -687,7 +687,7 @@
    "open": 51100,
    "high": 57300,
    "low": 29200,
-   "close": 30400,
+   "close": 29950,
    "priceCheck": false,
    "priceSource": "naver",
    "priceFinal": false
