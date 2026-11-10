@@ -1,24 +1,42 @@
 import { useMemo, useState } from "react";
+import { SwapIcon } from "../components/icons";
+import { SearchField } from "../components/SearchField";
 import { computeRecord } from "../lib/calc";
-import { fullDate, shortBroker, signedPct, todayIso, toneOf } from "../lib/format";
+import { fullDate, matchesName, shortBroker, signedPct, signedWon, todayIso, toneOf } from "../lib/format";
 import { useStore } from "../lib/store";
-import type { Ipo, SubRecord } from "../types";
+import type { Ipo, Settings, SubRecord } from "../types";
 
-function pastLabel(record: SubRecord, ipo: Ipo | undefined, settings: Parameters<typeof computeRecord>[2]) {
+export type ProfitMetric = "rate" | "amount";
+
+function pastLabel(record: SubRecord, ipo: Ipo | undefined, settings: Settings, metric: ProfitMetric) {
   const r = computeRecord(record, ipo, settings);
-  if (r.status === "sold" && r.rate !== null) return { text: signedPct(r.rate), tone: toneOf(r.rate) };
+  if (r.status === "sold" && r.rate !== null && r.profit !== null) {
+    return metric === "rate"
+      ? { text: signedPct(r.rate), tone: toneOf(r.rate) }
+      : { text: signedWon(r.profit), tone: toneOf(r.profit) };
+  }
   if (r.status === "holding") return { text: "보유중", tone: "" };
   if (r.status === "unallocated") return { text: "수량 입력", tone: "" };
   return { text: "시세 대기", tone: "" };
 }
 
-export function SubscriptionsPage({ onOpen }: { onOpen: (id: string) => void }) {
+interface Props {
+  onOpen: (id: string) => void;
+  query: string;
+  onQueryChange: (query: string) => void;
+  metric: ProfitMetric;
+  onMetricChange: (metric: ProfitMetric) => void;
+}
+
+export function SubscriptionsPage({ onOpen, query, onQueryChange, metric, onMetricChange }: Props) {
   const { records, ipoByNo, settings } = useStore();
   const [holdingOnly, setHoldingOnly] = useState(false);
   const today = todayIso();
 
   const { past, upcoming } = useMemo(() => {
-    const withIpo = records.map((record) => ({ record, ipo: ipoByNo.get(record.ipoNo) }));
+    const withIpo = records
+      .map((record) => ({ record, ipo: ipoByNo.get(record.ipoNo) }))
+      .filter(({ record, ipo }) => matchesName(ipo?.name ?? `종목 ${record.ipoNo}`, query));
     const isPast = (x: { ipo?: Ipo }) => !!x.ipo?.listDate && x.ipo.listDate <= today;
     return {
       // 지난 청약은 최근 상장한 종목부터
@@ -28,12 +46,15 @@ export function SubscriptionsPage({ onOpen }: { onOpen: (id: string) => void }) 
         .filter((x) => !isPast(x))
         .sort((a, b) => (a.ipo?.listDate ?? "9").localeCompare(b.ipo?.listDate ?? "9")),
     };
-  }, [records, ipoByNo, today]);
+  }, [records, ipoByNo, today, query]);
 
   const holdings = past.filter((x) => computeRecord(x.record, x.ipo, settings).status === "holding");
+  const searched = query.trim();
+  const noMatch = searched ? `'${searched}'에 맞는 종목이 없어요.` : null;
 
   const tools = (
     <div className="list-tools">
+      {records.length > 0 && <SearchField value={query} onChange={onQueryChange} />}
       <label className="check">
         <input type="checkbox" checked={holdingOnly} onChange={(e) => setHoldingOnly(e.target.checked)} />
         <span>보유중 주식 보기</span>
@@ -50,10 +71,21 @@ export function SubscriptionsPage({ onOpen }: { onOpen: (id: string) => void }) 
     );
   }
 
+  const metricHead = (
+    <button
+      className="head-toggle"
+      aria-label={metric === "rate" ? "수익금으로 보기" : "수익률로 보기"}
+      onClick={() => onMetricChange(metric === "rate" ? "amount" : "rate")}
+    >
+      <span>{metric === "rate" ? "수익률" : "수익금"}</span>
+      <SwapIcon />
+    </button>
+  );
+
   const renderPast = (list: typeof past) => (
     <ul className="list">
       {list.map(({ record, ipo }) => {
-        const label = pastLabel(record, ipo, settings);
+        const label = pastLabel(record, ipo, settings, metric);
         return (
           <li key={record.id}>
             <button className="row" onClick={() => onOpen(record.id)}>
@@ -75,7 +107,20 @@ export function SubscriptionsPage({ onOpen }: { onOpen: (id: string) => void }) 
     return (
       <section>
         {tools}
-        {holdings.length === 0 ? <p className="empty">보유중인 주식이 없어요.</p> : renderPast(holdings)}
+        {holdings.length === 0 ? (
+          <p className="empty">{noMatch ?? "보유중인 주식이 없어요."}</p>
+        ) : (
+          renderPast(holdings)
+        )}
+      </section>
+    );
+  }
+
+  if (noMatch && past.length === 0 && upcoming.length === 0) {
+    return (
+      <section>
+        {tools}
+        <p className="empty">{noMatch}</p>
       </section>
     );
   }
@@ -87,7 +132,9 @@ export function SubscriptionsPage({ onOpen }: { onOpen: (id: string) => void }) 
         <span>상장 예정</span>
         <span>상장일</span>
       </div>
-      {upcoming.length === 0 && <p className="empty small">상장을 기다리는 종목이 없어요.</p>}
+      {upcoming.length === 0 && (
+        <p className="empty small">{noMatch ? "검색한 종목 중 상장 예정이 없어요." : "상장을 기다리는 종목이 없어요."}</p>
+      )}
       <ul className="list">
         {upcoming.map(({ record, ipo }) => (
           <li key={record.id}>
@@ -105,7 +152,7 @@ export function SubscriptionsPage({ onOpen }: { onOpen: (id: string) => void }) 
         <>
           <div className="list-head spaced">
             <span>지난 청약</span>
-            <span>수익률</span>
+            {metricHead}
           </div>
           {renderPast(past)}
         </>

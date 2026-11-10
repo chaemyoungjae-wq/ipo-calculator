@@ -4,10 +4,11 @@ import { CloseIcon, GearIcon, MenuIcon } from "./components/icons";
 import { IpoDetail } from "./components/IpoDetail";
 import { RecordCard } from "./components/RecordCard";
 import { SettingsSheet } from "./components/SettingsSheet";
+import type { IpoStage } from "./lib/format";
 import { useStore } from "./lib/store";
 import { ProfitPage } from "./pages/ProfitPage";
-import { SubscriptionsPage } from "./pages/SubscriptionsPage";
-import { UpcomingPage } from "./pages/UpcomingPage";
+import { SubscriptionsPage, type ProfitMetric } from "./pages/SubscriptionsPage";
+import { EMPTY_STAGE_QUERIES, UpcomingPage, type StageQueries } from "./pages/UpcomingPage";
 
 type Tab = "upcoming" | "subscriptions" | "profit";
 
@@ -25,6 +26,11 @@ export function App() {
   const [ipoNo, setIpoNo] = useState<number | null>(null);
   const [recordId, setRecordId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  // 탭을 옮겼다 돌아와도 보던 화면이 남도록 앱 실행 중에는 여기서 기억한다.
+  const [stage, setStage] = useState<IpoStage>("preparing");
+  const [stageQueries, setStageQueries] = useState<StageQueries>(EMPTY_STAGE_QUERIES);
+  const [mySearch, setMySearch] = useState("");
+  const [metric, setMetric] = useState<ProfitMetric>("rate");
 
   useEffect(() => {
     if (!toast) return;
@@ -88,9 +94,21 @@ export function App() {
 
       <main>
         {!ready ? null : tab === "upcoming" ? (
-          <UpcomingPage onOpen={setIpoNo} />
+          <UpcomingPage
+            onOpen={setIpoNo}
+            stage={stage}
+            onStageChange={setStage}
+            queries={stageQueries}
+            onQueryChange={(s, q) => setStageQueries((all) => ({ ...all, [s]: q }))}
+          />
         ) : tab === "subscriptions" ? (
-          <SubscriptionsPage onOpen={setRecordId} />
+          <SubscriptionsPage
+            onOpen={setRecordId}
+            query={mySearch}
+            onQueryChange={setMySearch}
+            metric={metric}
+            onMetricChange={setMetric}
+          />
         ) : (
           <ProfitPage onOpen={setRecordId} />
         )}

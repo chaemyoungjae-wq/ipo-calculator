@@ -260,8 +260,69 @@ main {
 
 .list-tools {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 12px;
   padding: 6px 16px 0;
+}
+
+.list-tools .search-field {
+  flex: 1;
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 40px;
+  padding-left: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.search-field:focus-within {
+  border-color: var(--ink);
+}
+
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: none;
+  font-size: 15px;
+}
+
+.search-field input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  color: var(--ink-3);
+}
+
+.head-search,
+.head-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  margin: -6px 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.head-toggle {
+  color: var(--ink);
 }
 
 .check {
@@ -291,6 +352,22 @@ main {
   color: var(--ink-2);
   font-size: 13px;
   font-weight: 600;
+}
+
+.list-head.searching {
+  align-items: center;
+  gap: 12px;
+  padding: 4px 12px 4px 4px;
+}
+
+.list-head.searching .search-field {
+  flex: 1;
+  height: 36px;
+}
+
+.list-head.searching .search-btn {
+  width: 36px;
+  height: 36px;
 }
 
 .list-head.spaced {
@@ -564,6 +641,27 @@ main {
 .picker {
   display: grid;
   gap: 8px;
+}
+
+.picker-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 4px 6px;
+  line-height: 1.2;
+}
+
+.picker-btn span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.picker-btn small {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 /* 입력 */

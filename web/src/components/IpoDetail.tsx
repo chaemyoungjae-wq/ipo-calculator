@@ -103,20 +103,23 @@ export function IpoDetail({ ipoNo, onClose, onToast }: { ipoNo: number; onClose:
       </ul>
 
       {picking ? (
-        <div className="picker">
+        <>
           <h3 className="section-title">어느 증권사로 청약하셨나요?</h3>
-          {underwriters.map((u) => (
-            <button
-              key={u.name}
-              className="btn"
-              disabled={taken.has(u.name)}
-              onClick={() => subscribe(u.name)}
-            >
-              {shortBroker(u.name)}
-              {taken.has(u.name) ? " (청약함)" : ""}
-            </button>
-          ))}
-        </div>
+          {/* 증권사 수만큼 한 줄을 나눈다. 너무 좁아지지 않게 한 줄에 최대 4개까지 둔다. */}
+          <div className="picker" style={{ gridTemplateColumns: `repeat(${Math.min(underwriters.length, 4)}, 1fr)` }}>
+            {underwriters.map((u) => (
+              <button
+                key={u.name}
+                className="btn picker-btn"
+                disabled={taken.has(u.name)}
+                onClick={() => subscribe(u.name)}
+              >
+                <span>{shortBroker(u.name)}</span>
+                {taken.has(u.name) && <small>청약함</small>}
+              </button>
+            ))}
+          </div>
+        </>
       ) : (
         <button
           className="btn primary wide"

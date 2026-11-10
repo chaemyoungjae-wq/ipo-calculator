@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS, type Ipo, type SubRecord } from "../types";
 import { computeRecord, minDeposit } from "./calc";
-import { brokerKey, ipoStage, monthsAgo, shortBroker } from "./format";
+import { brokerKey, ipoStage, matchesName, monthsAgo, shortBroker } from "./format";
 import { monthsBetween, periodRange, summarize } from "./stats";
 
 const ipo: Ipo = { no: 1, name: "테스트", price: 12400, open: 15890, listDate: "2026-11-04", depositRate: 50 };
@@ -119,6 +119,22 @@ describe("ipoStage", () => {
     expect(ipoStage({ subEnd: "2026-11-08" }, today)).toBe("preparing");
     expect(ipoStage({ subEnd: "2026-12-10" }, today)).toBe("preparing");
     expect(ipoStage({}, today)).toBe("preparing");
+  });
+});
+
+describe("matchesName", () => {
+  it("대소문자와 띄어쓰기를 무시한다", () => {
+    expect(matchesName("KB스팩34호", "kb 스팩")).toBe(true);
+    expect(matchesName("영광(구.영광공작소)", "공작소")).toBe(true);
+  });
+
+  it("검색어가 비어 있으면 모두 보인다", () => {
+    expect(matchesName("이에스티", "")).toBe(true);
+    expect(matchesName("이에스티", "  ")).toBe(true);
+  });
+
+  it("들어 있지 않으면 걸러낸다", () => {
+    expect(matchesName("이에스티", "인텔")).toBe(false);
   });
 });
 

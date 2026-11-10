@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
-import { fullDate, ipoStage, shortBroker, shortDate, todayIso, type IpoStage } from "../lib/format";
+import { SearchIcon } from "../components/icons";
+import { SearchField } from "../components/SearchField";
+import { fullDate, ipoStage, matchesName, shortBroker, shortDate, todayIso, type IpoStage } from "../lib/format";
 import { useStore } from "../lib/store";
 import type { Ipo } from "../types";
 
@@ -8,6 +10,10 @@ const STAGES: { id: IpoStage; label: string; dateHead: string; empty: string }[]
   { id: "listing", label: "상장 예정", dateHead: "상장일", empty: "상장을 기다리는 종목이 없어요." },
   { id: "preparing", label: "청약 준비", dateHead: "청약일", empty: "청약을 앞둔 종목이 없어요." },
 ];
+
+export type StageQueries = Record<IpoStage, string>;
+
+export const EMPTY_STAGE_QUERIES: StageQueries = { listed: "", listing: "", preparing: "" };
 
 function compareIn(stage: IpoStage) {
   return (a: Ipo, b: Ipo) => {
@@ -24,15 +30,30 @@ function dateLabel(ipo: Ipo, stage: IpoStage): string {
   return start && end ? `${start} ~ ${end}` : start || "미정";
 }
 
-export function UpcomingPage({ onOpen }: { onOpen: (no: number) => void }) {
+interface Props {
+  onOpen: (no: number) => void;
+  stage: IpoStage;
+  onStageChange: (stage: IpoStage) => void;
+  /** 작은 탭마다 따로 두는 검색어 */
+  queries: StageQueries;
+  onQueryChange: (stage: IpoStage, query: string) => void;
+}
+
+export function UpcomingPage({ onOpen, stage, onStageChange, queries, onQueryChange }: Props) {
   const { data, settings } = useStore();
-  const [stage, setStage] = useState<IpoStage>("preparing");
+  // 검색어 없이 검색칸만 연 상태. 검색어가 있으면 항상 열려 있다.
+  const [openedEmpty, setOpenedEmpty] = useState<IpoStage | null>(null);
   const today = todayIso();
   const current = STAGES.find((s) => s.id === stage)!;
+  const query = queries[stage];
+  const searching = query !== "" || openedEmpty === stage;
 
   const ipos = useMemo(
-    () => (data?.ipos ?? []).filter((i) => ipoStage(i, today) === stage).sort(compareIn(stage)),
-    [data, today, stage],
+    () =>
+      (data?.ipos ?? [])
+        .filter((i) => ipoStage(i, today) === stage && matchesName(i.name, query))
+        .sort(compareIn(stage)),
+    [data, today, stage, query],
   );
 
   return (
@@ -44,17 +65,32 @@ export function UpcomingPage({ onOpen }: { onOpen: (no: number) => void }) {
             role="tab"
             aria-selected={stage === s.id}
             className={stage === s.id ? "subtab on" : "subtab"}
-            onClick={() => setStage(s.id)}
+            onClick={() => onStageChange(s.id)}
           >
             {s.label}
           </button>
         ))}
       </div>
-      <div className="list-head">
-        <span>기업명</span>
+      <div className={searching ? "list-head searching" : "list-head"}>
+        {searching ? (
+          <SearchField
+            key={stage}
+            value={query}
+            autoFocus={openedEmpty === stage}
+            onChange={(q) => onQueryChange(stage, q)}
+            onClear={() => setOpenedEmpty(null)}
+          />
+        ) : (
+          <button className="head-search" aria-label={`${current.label} 기업명 검색`} onClick={() => setOpenedEmpty(stage)}>
+            <span>기업명</span>
+            <SearchIcon size={16} />
+          </button>
+        )}
         <span>{current.dateHead}</span>
       </div>
-      {data && ipos.length === 0 && <p className="empty">{current.empty}</p>}
+      {data && ipos.length === 0 && (
+        <p className="empty">{query.trim() ? `'${query.trim()}'에 맞는 종목이 없어요.` : current.empty}</p>
+      )}
       <ul className="list">
         {ipos.map((ipo) => {
           const brokers = ipo.underwriters ?? [];

@@ -63,6 +63,14 @@ export function ipoStage(ipo: { listDate?: string; subEnd?: string }, today: str
   return "preparing";
 }
 
+const squash = (text: string) => text.replace(/\s+/g, "").toLowerCase();
+
+/** 대소문자와 띄어쓰기를 무시하고 기업명에 검색어가 들어 있는지 본다. 검색어가 비어 있으면 모두 통과. */
+export function matchesName(name: string, query: string): boolean {
+  const q = squash(query);
+  return !q || squash(name).includes(q);
+}
+
 /** 입력칸의 문자열에서 숫자만 읽는다. 비어 있으면 null. */
 export function parseAmount(text: string): number | null {
   const digits = text.replace(/[^\d]/g, "");

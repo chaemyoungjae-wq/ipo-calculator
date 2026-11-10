@@ -19,6 +19,19 @@ export const CloseIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
+export const SearchIcon = ({ size = 18 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-4-4" />
+  </svg>
+);
+
+export const SwapIcon = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+    <path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7" />
+  </svg>
+);
+
 export const GearIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" {...base}>
     <circle cx="12" cy="12" r="3" />
