@@ -21,7 +21,18 @@ export function SearchField({ value, onChange, placeholder = "기업명 검색",
         autoFocus={autoFocus}
         enterKeyHint="search"
         onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => e.key === "Escape" && (onChange(""), onClear?.())}
+        onKeyDown={(e) => {
+          // 한글 조합 중에 누른 Enter는 글자 확정용이라 건드리지 않는다.
+          if (e.nativeEvent.isComposing) return;
+          if (e.key === "Enter") {
+            // 입력할 때마다 이미 걸러지므로, Enter는 휴대폰 키패드를 닫는 데만 쓴다.
+            e.preventDefault();
+            e.currentTarget.blur();
+          } else if (e.key === "Escape") {
+            onChange("");
+            onClear?.();
+          }
+        }}
       />
       {value || onClear ? (
         <button

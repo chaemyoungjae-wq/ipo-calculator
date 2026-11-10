@@ -972,13 +972,6 @@ main {
   background: var(--loss);
 }
 
-.swatch.net {
-  height: 2px;
-  width: 12px;
-  border-radius: 0;
-  background: var(--ink);
-}
-
 .chart-scroll {
   overflow-x: auto;
 }
@@ -1014,12 +1007,6 @@ main {
 
 .bar-loss {
   fill: var(--loss);
-}
-
-.net-mark {
-  stroke: var(--ink);
-  stroke-width: 2;
-  stroke-linecap: round;
 }
 
 .col-selected {

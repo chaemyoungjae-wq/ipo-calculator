@@ -34,8 +34,8 @@ function barPath(x: number, y0: number, y1: number, width: number, roundTop: boo
 
 /**
  * 월별 수익 그래프.
- * 수익 막대는 0에서 위로, 손실 막대는 수익 막대 꼭대기에서 아래로 내려온다.
- * 손실 막대가 끝나는 지점이 그 달의 차익이다.
+ * 그 달의 수익 합계(빨강)와 손실 합계(파랑)를 0에서 위로 나란히 세워 크기를 비교한다.
+ * 차익은 아래 상세 칸의 숫자로 보여준다.
  */
 export function ProfitChart({ months }: { months: MonthStat[] }) {
   const box = useRef<HTMLDivElement>(null);
@@ -59,14 +59,12 @@ export function ProfitChart({ months }: { months: MonthStat[] }) {
   const slot = plotWidth / Math.max(months.length, 1);
   const barWidth = Math.min(16, Math.max(8, (slot - 8) / 2));
 
-  const maxValue = Math.max(0, ...months.map((m) => m.gain));
-  const minValue = Math.min(0, ...months.map((m) => m.net));
-  const step = niceStep(Math.max(maxValue - minValue, 1), 4);
+  const maxValue = Math.max(0, ...months.flatMap((m) => [m.gain, m.loss]));
+  const step = niceStep(Math.max(maxValue, 1), 4);
   const top = Math.ceil(maxValue / step) * step || step;
-  const bottom = Math.floor(minValue / step) * step;
-  const y = (v: number) => PAD.top + ((top - v) / (top - bottom)) * (HEIGHT - PAD.top - PAD.bottom);
+  const y = (v: number) => PAD.top + ((top - v) / top) * (HEIGHT - PAD.top - PAD.bottom);
   const ticks: number[] = [];
-  for (let v = bottom; v <= top + step / 2; v += step) ticks.push(v);
+  for (let v = 0; v <= top + step / 2; v += step) ticks.push(v);
 
   const current = months.find((m) => m.month === selected);
 
@@ -75,7 +73,6 @@ export function ProfitChart({ months }: { months: MonthStat[] }) {
       <div className="chart-legend">
         <span><i className="swatch gain" />수익</span>
         <span><i className="swatch loss" />손실</span>
-        <span><i className="swatch net" />차익</span>
       </div>
       <div className="chart-scroll" ref={box}>
         <svg width={width} height={HEIGHT} role="img" aria-label="월별 수익과 손실 막대그래프">
@@ -88,13 +85,11 @@ export function ProfitChart({ months }: { months: MonthStat[] }) {
           {months.map((m, i) => {
             const cx = PAD.left + slot * i + slot / 2;
             const isSelected = m.month === selected;
-            const hasBars = m.gain > 0 || m.loss > 0;
             return (
               <g key={m.month}>
                 {isSelected && <rect className="col-selected" x={cx - slot / 2 + 1} y={PAD.top} width={slot - 2} height={HEIGHT - PAD.top - PAD.bottom} rx={4} />}
                 {m.gain > 0 && <path className="bar-gain" d={barPath(cx - barWidth - 1, y(0), y(m.gain), barWidth, true)} />}
-                {m.loss > 0 && <path className="bar-loss" d={barPath(cx + 1, y(m.gain), y(m.net), barWidth, false)} />}
-                {hasBars && <line className="net-mark" x1={cx - barWidth - 3} x2={cx + barWidth + 3} y1={y(m.net)} y2={y(m.net)} />}
+                {m.loss > 0 && <path className="bar-loss" d={barPath(cx + 1, y(0), y(m.loss), barWidth, true)} />}
                 <text className={isSelected ? "tick on" : "tick"} x={cx} y={HEIGHT - 8} textAnchor="middle">
                   {multiYear ? `${m.month.slice(2, 4)}.${m.month.slice(5)}` : `${Number(m.month.slice(5))}월`}
                 </text>
