@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-10T16:21+09:00",
+ "updatedAt": "2026-11-10T20:29+09:00",
  "warnings": [],
  "ipos": [
   {
@@ -99,6 +99,34 @@
     {
      "name": "BNK투자증권",
      "limit": 9000
+    }
+   ]
+  },
+  {
+   "no": 2359,
+   "name": "마더스제약",
+   "market": "코스닥",
+   "code": "363170",
+   "industry": "완제 의약품 제조업",
+   "subStart": "2026-12-08",
+   "subEnd": "2026-12-09",
+   "demandStart": "2026-11-27",
+   "demandEnd": "2026-12-03",
+   "allocDate": "2026-12-11",
+   "payDate": "2026-12-11",
+   "refundDate": "2026-12-11",
+   "bandLow": 11000,
+   "bandHigh": 14500,
+   "depositRate": 50,
+   "offerShares": 2400000,
+   "underwriters": [
+    {
+     "name": "KB증권",
+     "limit": null
+    },
+    {
+     "name": "NH투자증권",
+     "limit": null
     }
    ]
   },
@@ -412,7 +440,9 @@
      "name": "하나증권",
      "limit": 30000
     }
-   ]
+   ],
+   "listDate": "2026-11-24",
+   "price": 7000
   },
   {
    "no": 2346,
