@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-10T14:12+09:00",
+ "updatedAt": "2026-11-10T16:21+09:00",
  "warnings": [],
  "ipos": [
   {
@@ -356,7 +356,9 @@
      "name": "삼성증권",
      "limit": null
     }
-   ]
+   ],
+   "floatShares": 4895920,
+   "floatPct": 24.17
   },
   {
    "no": 2352,
@@ -384,7 +386,9 @@
      "name": "신영증권",
      "limit": 1300
     }
-   ]
+   ],
+   "floatShares": 2167869,
+   "floatPct": 36.81
   },
   {
    "no": 2321,
@@ -432,7 +436,9 @@
      "name": "한국투자증권",
      "limit": 14000
     }
-   ]
+   ],
+   "floatShares": 13473501,
+   "floatPct": 45.75
   },
   {
    "no": 2347,
@@ -687,10 +693,11 @@
    "open": 51100,
    "high": 57300,
    "low": 28100,
-   "close": 29550,
+   "close": 29350,
    "priceCheck": false,
    "priceSource": "naver",
-   "priceFinal": false
+   "priceFinal": true,
+   "close38": 29400
   },
   {
    "no": 2329,
