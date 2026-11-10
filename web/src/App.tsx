@@ -29,6 +29,7 @@ export function App() {
   // 탭을 옮겼다 돌아와도 보던 화면이 남도록 앱 실행 중에는 여기서 기억한다.
   const [stage, setStage] = useState<IpoStage>("preparing");
   const [stageQueries, setStageQueries] = useState<StageQueries>(EMPTY_STAGE_QUERIES);
+  const [myBrokersOnly, setMyBrokersOnly] = useState(false);
   const [mySearch, setMySearch] = useState("");
   const [metric, setMetric] = useState<ProfitMetric>("rate");
 
@@ -100,6 +101,8 @@ export function App() {
             onStageChange={setStage}
             queries={stageQueries}
             onQueryChange={(s, q) => setStageQueries((all) => ({ ...all, [s]: q }))}
+            myBrokersOnly={myBrokersOnly}
+            onMyBrokersOnlyChange={setMyBrokersOnly}
           />
         ) : tab === "subscriptions" ? (
           <SubscriptionsPage

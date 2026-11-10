@@ -308,7 +308,6 @@ main {
   color: var(--ink-3);
 }
 
-.head-search,
 .head-toggle {
   display: inline-flex;
   align-items: center;
@@ -352,22 +351,6 @@ main {
   color: var(--ink-2);
   font-size: 13px;
   font-weight: 600;
-}
-
-.list-head.searching {
-  align-items: center;
-  gap: 12px;
-  padding: 4px 12px 4px 4px;
-}
-
-.list-head.searching .search-field {
-  flex: 1;
-  height: 36px;
-}
-
-.list-head.searching .search-btn {
-  width: 36px;
-  height: 36px;
 }
 
 .list-head.spaced {
@@ -869,6 +852,35 @@ main {
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--bg);
+}
+
+.year-stepper {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.year-stepper select {
+  min-width: 88px;
+  text-align: center;
+}
+
+/* 월별에서 연도 묶음이 좁아지지 않도록 월 칸은 고정 폭으로 둔다. */
+.period-row .month-select {
+  flex: 0 0 96px;
+}
+
+.step-btn {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
 }
 
 .hero {

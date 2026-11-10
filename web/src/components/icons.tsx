@@ -32,6 +32,18 @@ export const SwapIcon = ({ size = 14 }: { size?: number }) => (
   </svg>
 );
 
+export const ChevronLeftIcon = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+    <path d="M15 5l-7 7 7 7" />
+  </svg>
+);
+
+export const ChevronRightIcon = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...base}>
+    <path d="M9 5l7 7-7 7" />
+  </svg>
+);
+
 export const GearIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" {...base}>
     <circle cx="12" cy="12" r="3" />

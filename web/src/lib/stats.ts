@@ -35,6 +35,14 @@ export function periodRange(kind: Exclude<PeriodKind, "custom">, year: number, m
   return [`${year}-${mm}-01`, `${year}-${mm}-${new Date(year, month, 0).getDate()}`];
 }
 
+/** 기록이 있는 가장 이른 해(없으면 올해)부터 내년까지, 빠진 해 없이 최근 해가 먼저 오도록. */
+export function yearOptions(recordYears: number[], thisYear: number): number[] {
+  const first = Math.min(thisYear, ...recordYears);
+  const result: number[] = [];
+  for (let y = thisYear + 1; y >= first; y -= 1) result.push(y);
+  return result;
+}
+
 export function monthsBetween(from: string, to: string): string[] {
   const result: string[] = [];
   let y = Number(from.slice(0, 4));

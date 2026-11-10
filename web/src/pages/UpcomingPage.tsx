@@ -1,5 +1,4 @@
-import { useMemo, useState } from "react";
-import { SearchIcon } from "../components/icons";
+import { useMemo } from "react";
 import { SearchField } from "../components/SearchField";
 import { fullDate, ipoStage, matchesName, shortBroker, shortDate, todayIso, type IpoStage } from "../lib/format";
 import { useStore } from "../lib/store";
@@ -37,24 +36,38 @@ interface Props {
   /** 작은 탭마다 따로 두는 검색어 */
   queries: StageQueries;
   onQueryChange: (stage: IpoStage, query: string) => void;
+  /** 내 증권사가 주간사인 종목만 보기. 작은 탭 사이에서 함께 쓴다. */
+  myBrokersOnly: boolean;
+  onMyBrokersOnlyChange: (value: boolean) => void;
 }
 
-export function UpcomingPage({ onOpen, stage, onStageChange, queries, onQueryChange }: Props) {
+export function UpcomingPage(props: Props) {
+  const { onOpen, stage, onStageChange, queries, onQueryChange, myBrokersOnly, onMyBrokersOnlyChange } = props;
   const { data, settings } = useStore();
-  // 검색어 없이 검색칸만 연 상태. 검색어가 있으면 항상 열려 있다.
-  const [openedEmpty, setOpenedEmpty] = useState<IpoStage | null>(null);
   const today = todayIso();
   const current = STAGES.find((s) => s.id === stage)!;
   const query = queries[stage];
-  const searching = query !== "" || openedEmpty === stage;
+  const isMine = (ipo: Ipo) => (ipo.underwriters ?? []).some((u) => settings.myBrokers.includes(u.name));
 
   const ipos = useMemo(
     () =>
       (data?.ipos ?? [])
-        .filter((i) => ipoStage(i, today) === stage && matchesName(i.name, query))
+        .filter((i) => ipoStage(i, today) === stage && matchesName(i.name, query) && (!myBrokersOnly || isMine(i)))
         .sort(compareIn(stage)),
-    [data, today, stage, query],
+    // isMine은 settings.myBrokers에만 의존한다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, today, stage, query, myBrokersOnly, settings.myBrokers],
   );
+
+  const searched = query.trim();
+  const emptyText =
+    myBrokersOnly && settings.myBrokers.length === 0
+      ? "왼쪽 메뉴(☰)에서 내 증권사를 먼저 골라 주세요."
+      : searched
+        ? `'${searched}'에 맞는 종목이 없어요.`
+        : myBrokersOnly
+          ? "내 증권사가 맡은 종목이 없어요."
+          : current.empty;
 
   return (
     <section>
@@ -71,30 +84,22 @@ export function UpcomingPage({ onOpen, stage, onStageChange, queries, onQueryCha
           </button>
         ))}
       </div>
-      <div className={searching ? "list-head searching" : "list-head"}>
-        {searching ? (
-          <SearchField
-            key={stage}
-            value={query}
-            autoFocus={openedEmpty === stage}
-            onChange={(q) => onQueryChange(stage, q)}
-            onClear={() => setOpenedEmpty(null)}
-          />
-        ) : (
-          <button className="head-search" aria-label={`${current.label} 기업명 검색`} onClick={() => setOpenedEmpty(stage)}>
-            <span>기업명</span>
-            <SearchIcon size={16} />
-          </button>
-        )}
+      <div className="list-tools">
+        <SearchField key={stage} value={query} onChange={(q) => onQueryChange(stage, q)} />
+        <label className="check">
+          <input type="checkbox" checked={myBrokersOnly} onChange={(e) => onMyBrokersOnlyChange(e.target.checked)} />
+          <span>보유 증권사 보기</span>
+        </label>
+      </div>
+      <div className="list-head">
+        <span>기업명</span>
         <span>{current.dateHead}</span>
       </div>
-      {data && ipos.length === 0 && (
-        <p className="empty">{query.trim() ? `'${query.trim()}'에 맞는 종목이 없어요.` : current.empty}</p>
-      )}
+      {data && ipos.length === 0 && <p className="empty">{emptyText}</p>}
       <ul className="list">
         {ipos.map((ipo) => {
           const brokers = ipo.underwriters ?? [];
-          const mine = brokers.some((u) => settings.myBrokers.includes(u.name));
+          const mine = isMine(ipo);
           const live = !!ipo.subStart && !!ipo.subEnd && ipo.subStart <= today && today <= ipo.subEnd;
           return (
             <li key={ipo.no}>

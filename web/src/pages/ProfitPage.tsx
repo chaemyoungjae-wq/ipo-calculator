@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
 import { ProfitChart } from "../components/ProfitChart";
 import { monthsAgo, shortBroker, shortDate, signedPct, signedWon, todayIso, toneOf, won } from "../lib/format";
-import { periodRange, summarize, type PeriodKind } from "../lib/stats";
+import { periodRange, summarize, yearOptions, type PeriodKind } from "../lib/stats";
+import { ChevronLeftIcon, ChevronRightIcon } from "../components/icons";
 import { useStore } from "../lib/store";
 
 const KINDS: { id: PeriodKind; label: string }[] = [
-  { id: "year", label: "연도" },
-  { id: "month", label: "월" },
+  { id: "year", label: "연도별" },
+  { id: "month", label: "월별" },
   { id: "custom", label: "지정" },
 ];
 
@@ -17,12 +18,11 @@ export function ProfitPage({ onOpen }: { onOpen: (id: string) => void }) {
   const thisMonth = Number(today.slice(5, 7));
 
   const years = useMemo(() => {
-    const set = new Set<number>([thisYear]);
-    for (const r of records) {
+    const recordYears = records.flatMap((r) => {
       const date = ipoByNo.get(r.ipoNo)?.listDate;
-      if (date) set.add(Number(date.slice(0, 4)));
-    }
-    return [...set].sort((a, b) => b - a);
+      return date ? [Number(date.slice(0, 4))] : [];
+    });
+    return yearOptions(recordYears, thisYear);
   }, [records, ipoByNo, thisYear]);
 
   const [kind, setKind] = useState<PeriodKind>("year");
@@ -58,13 +58,26 @@ export function ProfitPage({ onOpen }: { onOpen: (id: string) => void }) {
           </>
         ) : (
           <>
-            <select aria-label="연도" value={year} onChange={(e) => setYear(Number(e.target.value))}>
-              {years.map((y) => (
-                <option key={y} value={y}>{y}년</option>
-              ))}
-            </select>
+            <div className="year-stepper">
+              <button
+                className="step-btn"
+                aria-label="이전 연도"
+                disabled={year <= years[years.length - 1]}
+                onClick={() => setYear(year - 1)}
+              >
+                <ChevronLeftIcon />
+              </button>
+              <select aria-label="연도" value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                {years.map((y) => (
+                  <option key={y} value={y}>{y}년</option>
+                ))}
+              </select>
+              <button className="step-btn" aria-label="다음 연도" disabled={year >= years[0]} onClick={() => setYear(year + 1)}>
+                <ChevronRightIcon />
+              </button>
+            </div>
             {kind === "month" && (
-              <select aria-label="월" value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+              <select className="month-select" aria-label="월" value={month} onChange={(e) => setMonth(Number(e.target.value))}>
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                   <option key={m} value={m}>{m}월</option>
                 ))}
