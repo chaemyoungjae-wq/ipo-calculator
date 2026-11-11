@@ -1,6 +1,9 @@
 {
- "updatedAt": "2026-11-11T15:25+09:00",
- "warnings": [],
+ "updatedAt": "2026-11-11T20:19+09:00",
+ "warnings": [
+  "씨앤엠: 상세 읽기 실패 (ValueError)",
+  "제이앤티지: 상세 읽기 실패 (ValueError)"
+ ],
  "ipos": [
   {
    "no": 2355,
@@ -526,7 +529,9 @@
    "listDate": "2026-11-20",
    "price": 5700,
    "instCompetition": "1051.38:1",
-   "lockupPct": 4.16
+   "lockupPct": 4.16,
+   "subCompetition": "1851.14:1",
+   "proportional": "3702:1"
   },
   {
    "no": 2331,
