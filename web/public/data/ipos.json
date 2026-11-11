@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-11T20:19+09:00",
+ "updatedAt": "2026-11-12T00:04+09:00",
  "warnings": [
   "씨앤엠: 상세 읽기 실패 (ValueError)",
   "제이앤티지: 상세 읽기 실패 (ValueError)"
@@ -694,8 +694,9 @@
    "floatPct": 30.38,
    "open38": 16000,
    "open": 16000,
-   "close": null,
-   "priceSource": "38"
+   "close": 11780,
+   "priceSource": "38",
+   "close38": 11780
   },
   {
    "no": 2339,
