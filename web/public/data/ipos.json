@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-13T03:38+09:00",
+ "updatedAt": "2026-11-13T15:47+09:00",
  "warnings": [
   "씨앤엠: 상세 읽기 실패 (ValueError)",
   "제이앤티지: 상세 읽기 실패 (ValueError)"
@@ -50,6 +50,34 @@
     {
      "name": "한국투자증권",
      "limit": 11000
+    }
+   ]
+  },
+  {
+   "no": 2360,
+   "name": "태석광학",
+   "market": "코스닥",
+   "code": "0221D0",
+   "industry": "안경 및 안경렌즈 제조업",
+   "subStart": "2026-12-14",
+   "subEnd": "2026-12-15",
+   "demandStart": "2026-12-03",
+   "demandEnd": "2026-12-09",
+   "allocDate": "2026-12-17",
+   "payDate": "2026-12-17",
+   "refundDate": "2026-12-17",
+   "bandLow": 17500,
+   "bandHigh": 20200,
+   "depositRate": 50,
+   "offerShares": 2478000,
+   "underwriters": [
+    {
+     "name": "신한투자증권",
+     "limit": null
+    },
+    {
+     "name": "대신증권",
+     "limit": null
     }
    ]
   },
