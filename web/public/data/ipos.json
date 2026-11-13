@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-13T15:47+09:00",
+ "updatedAt": "2026-11-13T20:21+09:00",
  "warnings": [
   "씨앤엠: 상세 읽기 실패 (ValueError)",
   "제이앤티지: 상세 읽기 실패 (ValueError)"
@@ -80,6 +80,32 @@
      "limit": null
     }
    ]
+  },
+  {
+   "no": 2341,
+   "name": "제논",
+   "market": "코스닥",
+   "code": "0158J0",
+   "industry": "컴퓨터시스템 통합 자문, 구축 및 관리업",
+   "subStart": "2026-12-14",
+   "subEnd": "2026-12-15",
+   "demandStart": "2026-12-03",
+   "demandEnd": "2026-12-09",
+   "allocDate": "2026-12-17",
+   "payDate": "2026-12-17",
+   "refundDate": "2026-12-17",
+   "bandLow": 9700,
+   "bandHigh": 12200,
+   "depositRate": 50,
+   "offerShares": 2200000,
+   "underwriters": [
+    {
+     "name": "삼성증권",
+     "limit": 16000
+    }
+   ],
+   "floatShares": 4166180,
+   "floatPct": 29.07
   },
   {
    "no": 2348,
@@ -284,32 +310,6 @@
    ]
   },
   {
-   "no": 2341,
-   "name": "제논",
-   "market": "코스닥",
-   "code": "0158J0",
-   "industry": "컴퓨터시스템 통합 자문, 구축 및 관리업",
-   "subStart": "2026-11-24",
-   "subEnd": "2026-11-25",
-   "demandStart": "2026-11-16",
-   "demandEnd": "2026-11-20",
-   "allocDate": "2026-11-27",
-   "payDate": "2026-11-27",
-   "refundDate": "2026-11-27",
-   "bandLow": 9700,
-   "bandHigh": 12200,
-   "depositRate": 50,
-   "offerShares": 2200000,
-   "underwriters": [
-    {
-     "name": "삼성증권",
-     "limit": 16000
-    }
-   ],
-   "floatShares": 4166180,
-   "floatPct": 29.07
-  },
-  {
    "no": 2340,
    "name": "케이엠에프",
    "market": "코스닥",
@@ -478,7 +478,9 @@
    "listDate": "2026-11-24",
    "price": 7000,
    "floatShares": 4878263,
-   "floatPct": 34.01
+   "floatPct": 34.01,
+   "subCompetition": "172:1",
+   "proportional": "344:1"
   },
   {
    "no": 2346,
